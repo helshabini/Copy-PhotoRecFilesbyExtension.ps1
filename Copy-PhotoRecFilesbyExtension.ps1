@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
 Copy-PhotoRecFilesbyExtension copies all files from the PhotoRec folders to new folders named by file extension.
 .DESCRIPTION
@@ -19,44 +19,34 @@ Is possible to set a filter to reorganize only a type of file. The filter must s
 Copy-PhotoRecFilesbyExtension -RootPhotoRecFolder G:\PhotoRec\* -RootDestinationFolder H:\PhotoOrderedbyExtension
 .EXAMPLE
 Copy-PhotoRecFilesbyExtension -RootPhotoRecFolder G:\PhotoRec\* -RootDestinationFolder H:\PhotoOrderedbyExtension -OverWriteDuplicated $True
-
 Any file found in the destination folder with the same name is overwritten
 .EXAMPLE
 Copy-PhotoRecFilesbyExtension -RootPhotoRecFolder G:\PhotoRec\* -RootDestinationFolder H:\PhotoOrderedbyExtension -CustomFileFilter *mp3
-
 In this example only MP3 files will be copied from the source folder to the destination. By default any file type is copied and reorganized.
 .EXAMPLE
 Copy-PhotoRecFilesbyExtension -RootPhotoRecFolder G:\PhotoRec\* -RootDestinationFolder H:\PhotoOrderedbyExtension -CustomFileFilter "*mp4","*avi"
-
 In this example only MP4 and AVI files will be copied from the source folder to the destination. Enclose with double quote and separate with a comma any extension required; don't forget the *. 
 .LINK
 http://www.powershellacademy.it/scripts
 .NOTES
 Written by: Luca Conte
-
 Find me on:
 * Website:	http://lucaconte.it
 * Twitter:  http://twitter.com/desmox796
 * Memrise:  http://www.memrise.com/user/desmox/courses/teaching/
 * MyBlog:   http://desmox796.wordpress.com
-
 IMPORTANT: *** THIS SCRIPT IS PROVIDED WITHOUT WARRANTY, USE AT YOUR OWN RISK *** 
-
 License:
 The MIT License (MIT)
-
 Copyright (c) 2016 Luca Conte
-
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
 to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
-
 The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
-
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -64,7 +54,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
 #>
 
 [CmdletBinding()]
@@ -80,11 +69,11 @@ param (
 
 Clear-Host
 #How many PhotoRec folders have to be analyzed?
-$NrFolderToAnalyze=(Get-ChildItem -Path $RootPhotoRec  -Directory).Count
+$NrFolderToAnalyze=(Get-ChildItem -Path $RootPhotoRec | ?{ $_.PSIsContainer }).Count
 # Write-Host "Found $NrFolderToAnalyze folder to Analyze!"
 $FolderCounter=0
 
-Get-ChildItem -Path $RootPhotoRec -Directory | foreach {
+Get-ChildItem -Path $RootPhotoRec | ?{ $_.PSIsContainer } | foreach {
     $FolderSource = $_.FullName
     $FolderCounter++
     $PercProgress=[int]($FolderCounter/$NrFolderToAnalyze*100)
@@ -102,10 +91,10 @@ if (!($PathToAnalyze.EndsWith("\*"))){
 }
     
     $FileCounter=0
-    $FilesToAnalyze = Get-ChildItem -Path $PathToAnalyze -File -Include $CustomFileFilter
+    $FilesToAnalyze = Get-ChildItem -Path $PathToAnalyze -Include $CustomFileFilter | ?{ !$_.PSIsContainer }
     $NrFileToAnalyze= $FilesToAnalyze.Count
 
-    # Get-ChildItem -Path $PathToAnalyze -File -Include $CustomFileFilter 
+    # Get-ChildItem -Path $PathToAnalyze -Include $CustomFileFilter | ?{ !$_.PSIsContainer }
     
     $FilesToAnalyze | foreach {
     
@@ -154,5 +143,3 @@ if (!($PathToAnalyze.EndsWith("\*"))){
 }
 
 }
- 
-
